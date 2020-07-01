@@ -1,6 +1,6 @@
 # InfluxDB container for ppc64le
 
-This is a container build of [InfluxDB]<https://www.influxdata.com/> for **ppc64le** systems.
+This is a container build of [InfluxDB](https://www.influxdata.com/) for **ppc64le** systems.
 
 These builds use the source code from <https://github.com/influxdata/influxdb>.
 
