@@ -1,0 +1,59 @@
+#-# Builder #-#
+
+FROM ubuntu:xenial as builder
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    python-software-properties \
+    software-properties-common \
+    wget \
+    git \
+    mercurial \
+    make \
+    ruby \
+    ruby-dev \
+    autoconf \
+    libtool \
+    build-essential \
+    rpm \
+    zip \
+    python \
+    python-boto \
+    asciidoc \
+    xmlto \
+    docbook-xsl
+
+RUN gem install fpm
+
+# setup environment
+ENV GO_VERSION  1.13.8
+ENV GOARCH      ppc64le
+ENV GOROOT      /usr/local/go
+ENV GOPATH      /root/go
+ENV PATH        $GOPATH/bin:$GOROOT/bin:$PATH
+ENV PROJECT_DIR /root/influxdb
+
+# install go
+RUN wget --no-verbose https://storage.googleapis.com/golang/go${GO_VERSION}.linux-${GOARCH}.tar.gz -O- | tar -C /usr/local/ -zxf-
+
+RUN mkdir -p $PROJECT_DIR
+#COPY . $PROJECT_DIR
+WORKDIR $PROJECT_DIR
+RUN git clone https://github.com/influxdata/influxdb.git .
+RUN git tag --delete v1.8.1rc0 && git checkout tags/v1.8.0
+RUN /root/influxdb/build.py
+
+
+#-# Runtime #-#
+
+FROM debian:stretch
+COPY --from=builder /root/influxdb/build/* /usr/bin/
+COPY --from=builder /root/influxdb/etc/config.sample.toml /etc/influxdb/influxdb.conf
+
+EXPOSE 8086
+EXPOSE 6060
+VOLUME /var/lib/influxdb
+
+COPY docker/entrypoint.sh /entrypoint.sh
+COPY docker/init-influxdb.sh /init-influxdb.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["influxd"]
