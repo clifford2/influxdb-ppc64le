@@ -1,6 +1,8 @@
 # InfluxDB container for ppc64le
 
-This is a container build of [InfluxDB](https://www.influxdata.com/) for **ppc64le** systems.
+This was a container build of [InfluxDB](https://www.influxdata.com/) for **ppc64le** systems.
+
+**It is no longer maintained**.
 
 These builds use the source code from <https://github.com/influxdata/influxdb>.
 
@@ -17,7 +19,3 @@ available in `Dockerfile-v1.8.0-ppc64le`, which builds the images by:
 - Copying the necessary files from this builder image to a final image
 
 For **v2.0.0-beta.13** no changes were required - I just built an image using the `Dockerfile` in the source ;-)
-
-## Docker Hub Images
-
-Built images are available at <https://hub.docker.com/repository/docker/cliffordw/influxdb>
